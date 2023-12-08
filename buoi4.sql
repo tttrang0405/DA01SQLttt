@@ -7,6 +7,7 @@ SELECT
 COUNT (CITY) - COUNT(DISTINCT CITY)
 FROM STATION;
 --ex3
+....
 --ex4
 -- 1 mặt hàng/1 đơn -> 500 đơn  
 -- 2 mặt hàng/1 đơn -> 1000 đơn 
@@ -43,6 +44,14 @@ GROUP BY card_name
 ORDER BY difference DESC
 ;
 --ex8
+SELECT manufacturer,
+COUNT(drug) AS drug_count,
+ABS(SUM(cogs-total_sales)) AS total_loss
+FROM pharmacy_sales
+WHERE total_sales<cogs
+GROUP BY manufacturer
+ORDER BY total_loss DESC
+;
 --ex9
 SELECT id, movie, description, rating
 FROM cinema
@@ -57,4 +66,14 @@ FROM teacher
 GROUP BY teacher_id
 ;
 --ex11
+SELECT user_id, 
+COUNT(follower_id) AS followers_count 
+FROM Followers
+GROUP BY user_id
+ORDER BY user_id ASC 
+;
 --ex12
+SELECT class
+FROM Courses
+HAVING COUNT(class) >5
+;
