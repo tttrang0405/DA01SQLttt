@@ -75,5 +75,5 @@ ORDER BY user_id ASC
 --ex12
 SELECT class
 FROM Courses
-HAVING COUNT(class) >5
+HAVING COUNT(class) >=5
 ;
