@@ -1,4 +1,9 @@
 --ex1
+SELECT name
+FROM STUDENTS
+WHERE marks>75
+ORDER BY RIGHT(name,3), ID
+;
 --ex2
 SELECT 
 user_id, 
@@ -39,8 +44,32 @@ tweet_id
 FROM Tweets
 WHERE length(content)>15
 ;
---ex3
---ex3
---ex3
---ex3
---ex3
+--ex7
+SELECT
+activity_date as day, 
+count(distinct(user_id )) as active_users
+FROM activity
+WHERE activity_date BETWEEN ' 2019-06-27' AND ' 2019-07-27'
+group by day 
+;
+--ex8
+SELECT 
+count(employee_id)as total_employees, 
+joining_date as total_date
+FROM employees
+WHERE where extract(month from joining_date) between 1 and 7
+AND extract(year from joining_date) ='2022'
+--ex9
+select 
+first_name,
+POSITION('a' in first_name)
+FROM worker
+WHERE first_name ='Amitah'
+;
+--ex10
+SELECT 
+country,
+winery|| ' ' ||SUBSTRING(title, length(winery)+2,4) as title_wine
+FROM winemag_p2
+WHERE country = 'Macedonia'
+;
