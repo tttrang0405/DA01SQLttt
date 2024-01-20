@@ -22,6 +22,24 @@ FROM
 ORDER BY
     product_id, year;
 --EX2: 
+WITH LaunchInfo AS (
+    SELECT
+        card_name,
+        MIN(issue_year * 12 + issue_month) AS launch_month
+    FROM
+        monthly_cards_issued
+    GROUP BY
+        card_name
+)
+SELECT
+    m.card_name,
+    m.issued_amount
+FROM
+    monthly_cards_issued m
+JOIN
+    LaunchInfo l ON m.card_name = l.card_name AND (m.issue_year * 12 + m.issue_month) = l.launch_month
+ORDER BY
+    m.issued_amount DESC;
 --EX3:
 WITH RankedTransactions AS (
   SELECT
@@ -37,7 +55,6 @@ WITH RankedTransactions AS (
   transaction_date
   FROM RankedTransactions
   WHERE transaction_rank ='3'
-
 --EX4:
 WITH latest_transactions_cte AS (
   SELECT
@@ -73,3 +90,43 @@ WITH rolling_avg_3d_CTE AS (
   ROUND(AVG(prev_day_count + prev_2nd_day_count + tweet_count),2)
   FROM rolling_avg_3d_CTE
   GROUP BY user_id, tweet_date
+--EX6
+--EX7
+WITH ranked_spending_cte AS (
+  SELECT 
+    category, 
+    product, 
+    SUM(spend) AS total_spend,
+    RANK() OVER (
+      PARTITION BY category 
+      ORDER BY SUM(spend) DESC) AS ranking 
+  FROM product_spend
+  WHERE EXTRACT(YEAR FROM transaction_date) = 2022
+  GROUP BY category, product
+)
+
+SELECT 
+  category, 
+  product, 
+  total_spend 
+FROM ranked_spending_cte 
+WHERE ranking <= 2 
+ORDER BY category, ranking;
+--EX8
+WITH global_rank AS 
+(
+  SELECT 
+  a. artist_name, 
+  DENSE_RANK() OVER (
+    ORDER BY COUNT(b.song_id) DESC) AS artist_rank
+  FROM artists a
+  JOIN songs b ON a.artist_id = b.artist_id
+  JOIN global_song_rank c ON b.song_id= c.song_id
+  WHERE c.rank <='10'
+  GROUP BY a.artist_name
+)
+
+  SELECT artist_name, artist_rank
+  FROM global_rank
+  WHERE artist_rank <= 5
+  ORDER BY artist_rank
