@@ -12,12 +12,26 @@ ON e.email_id  = t.email_id
 WHERE 
 e.email_id IS NOT NULL
 --ex3
-SELECT *
-FROM activities
-INNER JOIN age_breakdown AS age 
-ON activities.user_id = age.user_id 
-WHERE activities.activity_type IN ('send', 'open') 
-GROUP BY age.age_bucket;
+SELECT
+b.age_bucket,
+ROUND(100 * SUM(CASE
+  WHEN a.activity_type = 'send' THEN a.time_spent ELSE 0
+    END)/SUM(a.time_spent ),2) as send_perc,
+ROUND(100 * SUM(CASE
+  WHEN a.activity_type = 'open' THEN a.time_spent ELSE 0
+    END)/SUM(a.time_spent ),2) as open_perc,
+SUM(CASE
+  WHEN a.activity_type = 'send' THEN a.time_spent ELSE 0
+    END) as send_timespent,
+SUM(CASE
+  WHEN a.activity_type = 'open' THEN a.time_spent ELSE 0
+    END) as open_timespent,
+ SUM(a.time_spent ) as total_time
+FROM activities as a
+JOIN age_breakdown b
+ON a. user_id=b.user_id
+WHERE activity_type <> 'chat'
+  GROUP BY b.age_bucket
 --ex4
 SELECT customer_id 
 FROM customer_contracts AS cc
